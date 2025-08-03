@@ -4,20 +4,6 @@
 #include <SDL2/SDL.h>
 
 
-typedef float f32;
-typedef double f64;
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
-typedef size_t usize;
-typedef ssize_t isize;
-
-
 #define WW 800
 #define WH 600
 
@@ -32,6 +18,199 @@ typedef ssize_t isize;
 
 #define RAD(d) ((d) * (PI / 180.0f))
 #define DEG(d) ((d) * (180.0f / PI))
+
+
+typedef float f32;
+typedef double f64;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
+typedef size_t usize;
+typedef ssize_t isize;
+
+
+typedef struct
+{
+  f32 x, y;
+} v2;
+
+
+v2
+v2_add (v2 a, v2 b)
+{
+  v2 v;
+
+  v.x = a.x + b.x;
+  v.y = a.y + b.y;
+
+  return v;
+}
+
+
+v2
+v2_sub (v2 a, v2 b)
+{
+  v2 v;
+
+  v.x = a.x - b.x;
+  v.y = a.y - b.y;
+
+  return v;
+}
+
+
+v2
+v2_mul (v2 a, f32 scalar)
+{
+  v2 v;
+
+  v.x = a.x * scalar;
+  v.y = a.y * scalar;
+
+  return v;
+}
+
+
+v2
+v2_div (v2 a, f32 scalar)
+{
+  v2 v;
+
+  v.x = a.x / scalar;
+  v.y = a.y / scalar;
+
+  return v;
+}
+
+
+f32
+v2_dot (v2 a, v2 b)
+{
+  return a.x * b.x + a.y * b.y;
+}
+
+
+f32
+v2_length (v2 a)
+{
+  return sqrtf (v2_dot (a, a));
+}
+
+
+v2
+v2_normalize (v2 a)
+{
+  f32 length = v2_length (a);
+
+  if (length == 0.0f)
+    {
+      v2 v;
+
+      v.x = 0.0f;
+      v.y = 0.0f;
+
+      return v;
+    }
+
+  return v2_div (a, length);
+}
+
+
+typedef struct
+{
+  f32 x, y, z;
+} v3;
+
+
+v3
+v3_add (v3 a, v3 b)
+{
+  v3 v;
+
+  v.x = a.x + b.x;
+  v.y = a.y + b.y;
+  v.z = a.z + b.z;
+
+  return v;
+}
+
+
+v3
+v3_sub (v3 a, v3 b)
+{
+  v3 v;
+
+  v.x = a.x - b.x;
+  v.y = a.y - b.y;
+  v.z = a.z - b.z;
+
+  return v;
+}
+
+
+v3
+v3_mul (v3 a, f32 scalar)
+{
+  v3 v;
+
+  v.x = a.x * scalar;
+  v.y = a.y * scalar;
+  v.z = a.z * scalar;
+
+  return v;
+}
+
+
+v3
+v3_div (v3 a, f32 scalar)
+{
+  v3 v;
+
+  v.x = a.x / scalar;
+  v.y = a.y / scalar;
+  v.z = a.z / scalar;
+
+  return v;
+}
+
+
+f32
+v3_dot (v3 a, v3 b)
+{
+  return a.x * b.x + a.y * b.y;
+}
+
+
+f32
+v3_length (v3 a)
+{
+  return sqrtf (v3_dot (a, a));
+}
+
+
+v3
+v3_normalize (v3 a)
+{
+  f32 length = v3_length (a);
+
+  if (length == 0.0f)
+    {
+      v3 v;
+
+      v.x = 0.0f;
+      v.y = 0.0f;
+      v.z = 0.0f;
+
+      return v;
+    }
+
+  return v3_div (a, length);
+}
 
 
 static struct
@@ -112,8 +291,6 @@ main (void)
 
   state.last_tick = SDL_GetPerformanceCounter ();
 
-  f32 x = 0;
-
   while (!state.quit)
     {
       u64 current_tick = SDL_GetPerformanceCounter ();
@@ -146,5 +323,4 @@ main (void)
 
   return 0;
 }
-
 
