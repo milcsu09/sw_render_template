@@ -11,13 +11,16 @@
 #define RH 600
 
 
-#define PI 3.14159265359f
-#define PI_2 (PI / 2.0f)
-#define PI_4 (PI / 4.0f)
-#define TAU (PI * 2.0f)
+#define PI 3.1415927f
+#define PI_2 1.5707963f
+#define PI_4 0.7853982f
+#define TAU 6.2831853f
 
-#define RAD(d) ((d) * (PI / 180.0f))
-#define DEG(d) ((d) * (180.0f / PI))
+#define DEG2RAD 0.0174533f
+#define RAD2DEG 57.2957795f
+
+#define RAD(d) ((d) * DEG2RAD)
+#define DEG(d) ((d) * RAD2DEG)
 
 
 typedef float f32;
@@ -213,15 +216,13 @@ v3_normalize (v3 a)
 }
 
 
-static struct
+struct state
 {
   SDL_Window *window;
   SDL_Renderer *renderer;
   SDL_Texture *texture;
 
   u32 *pixels;
-
-  bool quit;
 
   f64 dt;
   u64 last_tick;
@@ -254,6 +255,13 @@ r_frame_end ()
 }
 
 
+void
+r_pixel (i32 x, i32 y, u32 color)
+{
+  state.pixels[y * RW + x] = color;
+}
+
+
 int
 main (void)
 {
@@ -283,7 +291,7 @@ main (void)
 
   if (!state.texture)
     {
-      fprintf (stderr, "SDL_CreateTexturefailed: %s\n", SDL_GetError ());
+      fprintf (stderr, "SDL_CreateTexture failed: %s\n", SDL_GetError ());
       return 1;
     }
 
@@ -291,7 +299,7 @@ main (void)
 
   state.last_tick = SDL_GetPerformanceCounter ();
 
-  while (!state.quit)
+  while (true)
     {
       u64 current_tick = SDL_GetPerformanceCounter ();
       u64 frequency = SDL_GetPerformanceFrequency ();
@@ -305,8 +313,7 @@ main (void)
         switch (event.type)
           {
           case SDL_QUIT:
-            state.quit = true;
-            break;
+            goto quit;
           default:
             break;
           }
@@ -316,6 +323,7 @@ main (void)
       r_frame_end ();
     }
 
+quit:
   free (state.pixels);
   SDL_DestroyTexture (state.texture);
   SDL_DestroyRenderer (state.renderer);
